@@ -1,0 +1,7 @@
+streamlit
+pandas
+folium
+random
+plotly
+matplotlib
+git
