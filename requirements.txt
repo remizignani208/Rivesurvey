@@ -1,6 +1,6 @@
 streamlit
 pandas
-folium
+folium==0.5.2
 random
 plotly
 matplotlib
