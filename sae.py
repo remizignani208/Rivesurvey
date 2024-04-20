@@ -149,7 +149,7 @@ nouveaux_noms_colonnes = ['insee_code', 'city_code', 'zip_code', 'label', 'latit
                           'Population Homme 15-64', 'Population Femme 15-64', 'Population Active 15-64',
                           'Population Active Homme 15-64', 'Population Active Femme 15-64', 'Chômeurs 15-64',
                           'Actifs 15-64', 'Actifs Agriculteurs', 'Actifs Artisants Commercants', 'Actifs Cadres',
-                          'Actifs Prof Intermediare', 'Actifs Employés', 'Actifs Ouvriers', 'Chômeurs', 'Chomeuse']
+                          'Actifs Prof Intermediare', 'Actifs Employés', 'Actifs Ouvriers', 'Chômeurs', 'Chômeuse']
 
 donnees_emploi.columns = nouveaux_noms_colonnes
 
@@ -553,14 +553,14 @@ def statistiques_avancees():
                         data_for_pie = {
                             'Catégories': ['Actifs Agriculteurs', 'Actifs Artisants Commerçants', 'Actifs Cadres', 'Actifs Prof Intermediare', 'Actifs Employés', 'Actifs Ouvriers', 'Chômeurs', 'Chômeuse'],
                             'Valeurs': [
-                                ville_data['actifs agriculteurs'], 
-                                ville_data['actifs artisants commercants'], 
-                                ville_data['actifs cadres'], 
-                                ville_data['actifs prof intermediare'], 
-                                ville_data['actifs employes'], 
-                                ville_data['actifs ouvriers'], 
-                                ville_data['chomeurs'], 
-                                ville_data['chomeuse']
+                                ville_data['Actifs Agriculteurs'], 
+                                ville_data['Actifs Artisants Commercants'], 
+                                ville_data['Actifs Cadres'], 
+                                ville_data['Actifs Prof Intermediare'], 
+                                ville_data['Actifs Employes'], 
+                                ville_data['Actifs Ouvriers'], 
+                                ville_data['Chômeurs'], 
+                                ville_data['Chômeuse']
                             ]
                         }
                         df_pie = pd.DataFrame(data_for_pie)
