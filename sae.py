@@ -145,11 +145,11 @@ for column in columns_to_convert:
 donnees_emploi = pd.merge(df, dfemploi, left_on='insee_code', right_on='CODGEO', how='inner')
 
 nouveaux_noms_colonnes = ['insee_code', 'city_code', 'zip_code', 'label', 'latitude', 'longitude', 'department_name',
-                          'department_number', 'region_name', 'region_geojson_name', 'CODGEO', 'population_15-64',
-                          'population_homme_15-64', 'population_femme_15-64', 'population_active_15-64',
-                          'population_active_homme_15-64', 'population_active_femme_15-64', 'chomeurs_15-64',
-                          'actifs_15-64', 'actifs_agriculteurs', 'actifs_artisants_commercants', 'actifs_cadres',
-                          'actifs_prof_intermediare', 'actifs_employes', 'actifs_ouvriers', 'chomeurs', 'chomeuse']
+                          'department_number', 'region_name', 'region_geojson_name', 'CODGEO', 'Population 15-64',
+                          'Population Homme 15-64', 'Population Femme 15-64', 'Population Active 15-64',
+                          'Population Active Homme 15-64', 'Population Active Femme 15-64', 'Chômeurs 15-64',
+                          'Actifs 15-64', 'Actifs Agriculteurs', 'Actifs Artisants Commercants', 'Actifs Cadres',
+                          'Actifs Prof Intermediare', 'Actifs Employés', 'Actifs Ouvriers', 'Chômeurs', 'Chomeuse']
 
 donnees_emploi.columns = nouveaux_noms_colonnes
 
@@ -177,9 +177,6 @@ colonnes_a_supprimer = ['label', 'zip_code', 'latitude', 'longitude', 'departmen
                         'department_number', 'region_name', 'region_geojson_name', 'A','Z','Unnamed: 5','Commune' ]
 
 resultsante = resultsante.drop(columns=colonnes_a_supprimer)
-
-
-
 
 # Mettre des noms plus lisibles
 villes = villes.rename(columns={
@@ -401,6 +398,18 @@ def compare_villes():
             st.write("Est-ce qu'il y a des étudiants ? Allez-vous y trouver l'amour ?")
             cols_to_keep = ['insee_code', 'label', 'Population_totale', 'Population_homme', 'Population_femme', 'Population_etudiante', 'Population_celibataire', 'Population_marie']
             donnees_chiffrees_filtered = pop[pop['city_code'].isin(ville_selection)][cols_to_keep]
+            # Dictionnaire pour renommer les colonnes, sauf les deux premières
+            new_column_names = {
+            'Population_totale': 'Population Totale',
+            'Population_homme': 'Population Hommes',
+            'Population_femme': 'Population Femmes',
+            'Population_etudiante': 'Population Étudiante',
+            'Population_celibataire': 'Population Célibataire',
+            'Population_marie': 'Population Mariée'
+            }
+
+            # Renommer les colonnes
+            donnees_chiffrees_filtered.rename(columns=new_column_names, inplace=True)
     
             # Filtrer pour garder une ligne par label unique
             donnees_chiffrees_unique_label = donnees_chiffrees_filtered.drop_duplicates(subset=['insee_code'], keep='first')
@@ -464,6 +473,13 @@ def statistiques_avancees():
             # Affichage nombre établissement privé et public par Villes
             grouped_df = Villes_Education_select.groupby(['Type_etablissement', 'Statut_public_prive', 'city_code']).size().reset_index(name='count')
             pivot_df = grouped_df.pivot_table(index=['Type_etablissement', 'Statut_public_prive'], columns='city_code', values='count', fill_value=0)
+            new_index_names = {
+                'Type_etablissement': 'Type d\'Établissement',
+                'Statut_public_prive': 'Statut Public/Privé'
+            }
+
+            # Renommer les niveaux d'index pour améliorer la lisibilité
+            pivot_df.index.set_names([new_index_names.get(name, name) for name in pivot_df.index.names], inplace=True)
             pivot_df.reset_index(inplace=True)
             
             # Création de trois colonnes
@@ -471,7 +487,7 @@ def statistiques_avancees():
 
             with col1:
                 # Affichage du DataFrame dans la première colonne
-                st.write("### Tableau des établissements scolaires en fonction des villes")
+                st.write("### Tableau des établissements scolaires des deux villes")
                 st.dataframe(pivot_df)
                 st.write("source : Ministère de l'Éducation")
 
@@ -480,7 +496,7 @@ def statistiques_avancees():
                 city_data_1 = Villes_Education_select[Villes_Education_select['city_code'] == ville_selection[0]]
                 type_counts_1 = city_data_1['Type_etablissement'].value_counts()
                 plot_data_1 = pd.DataFrame({'Type établissement': type_counts_1.index, 'Nombre': type_counts_1.values})
-                fig_1 = px.pie(plot_data_1, values='Nombre', names='Type établissement', title=f'Répartition des types d\'établissements pour la ville {ville_selection[0]}')
+                fig_1 = px.pie(plot_data_1, values='Nombre', names='Type établissement', title=f'Répartition des types d\'établissements de {ville_selection[0]}')
                 st.plotly_chart(fig_1)
                 st.write("source : Ministère de l'Éducation")
             
@@ -489,7 +505,7 @@ def statistiques_avancees():
                 city_data_2 = Villes_Education_select[Villes_Education_select['city_code'] == ville_selection[1]]
                 type_counts_2 = city_data_2['Type_etablissement'].value_counts()
                 plot_data_2 = pd.DataFrame({'Type établissement': type_counts_2.index, 'Nombre': type_counts_2.values})
-                fig_2 = px.pie(plot_data_2, values='Nombre', names='Type établissement', title=f'Répartition des types d\'établissements pour la ville {ville_selection[1]}')
+                fig_2 = px.pie(plot_data_2, values='Nombre', names='Type établissement', title=f'Répartition des types d\'établissements de {ville_selection[1]}')
                 st.plotly_chart(fig_2)
                 st.write("source : Ministère de l'Éducation")
         else:
@@ -537,18 +553,18 @@ def statistiques_avancees():
                         data_for_pie = {
                             'Catégories': ['Actifs Agriculteurs', 'Actifs Artisants Commerçants', 'Actifs Cadres', 'Actifs Prof Intermediare', 'Actifs Employés', 'Actifs Ouvriers', 'Chômeurs', 'Chômeuse'],
                             'Valeurs': [
-                                ville_data['actifs_agriculteurs'], 
-                                ville_data['actifs_artisants_commercants'], 
-                                ville_data['actifs_cadres'], 
-                                ville_data['actifs_prof_intermediare'], 
-                                ville_data['actifs_employes'], 
-                                ville_data['actifs_ouvriers'], 
+                                ville_data['actifs agriculteurs'], 
+                                ville_data['actifs artisants commercants'], 
+                                ville_data['actifs cadres'], 
+                                ville_data['actifs prof intermediare'], 
+                                ville_data['actifs employes'], 
+                                ville_data['actifs ouvriers'], 
                                 ville_data['chomeurs'], 
                                 ville_data['chomeuse']
                             ]
                         }
                         df_pie = pd.DataFrame(data_for_pie)
-                        fig = px.pie(df_pie, values='Valeurs', names='Catégories', title=f"Répartition des effectifs des classes socio-professionnelles pour {ville_code}")
+                        fig = px.pie(df_pie, values='Valeurs', names='Catégories', title=f"Répartition des effectifs des catégories socio-professionnelles pour {ville_code}")
                         st.plotly_chart(fig)
                         
                     else:
@@ -567,7 +583,7 @@ def statistiques_avancees():
                 st.write("\n")
                 st.write("\n")
                 st.write("\n")
-                st.write("#### Classe Socie-Professionnelle (CSP)")
+                st.write("#### Clatégorie Socio-Professionnelle (CSP)")
                 st.write("\n")
                 st.write("Ensemble de personnes occupant une même position sociale et partageant une communauté de destin et d'intérêt, sans forcément en avoir conscience (catégorie socioprofessionnelle).")
         else:
@@ -588,6 +604,17 @@ def statistiques_avancees():
 
             with col1:
                 Villes_Logement_filtered = Villes_Logement_select[['insee_code', 'label', 'Nombre_de_Maisons_en_vente', 'Nombre_Apparts_en_vente', 'Prix_Moyen', 'Prix_au_m2_Moyen', 'Surface_Moyenne']]
+                # Dictionnaire pour renommer les colonnes, sauf les deux premières
+                new_column_names = {
+                    'Nombre_de_Maisons_en_vente': 'Nombre de Maisons en Vente',
+                    'Nombre_Apparts_en_vente': 'Nombre d\'Appartements en Vente',
+                    'Prix_Moyen': 'Prix Moyen',
+                    'Prix_au_m2_Moyen': 'Prix Moyen au m²',
+                    'Surface_Moyenne': 'Surface Moyenne'
+                    }
+
+                # Renommer les colonnes
+                Villes_Logement_filtered.rename(columns=new_column_names, inplace=True)
                 Villes_Logement_filtered_T = Villes_Logement_filtered.T
                 st.write("### Tableau des données logement 2021")
                 st.dataframe(Villes_Logement_filtered_T)
@@ -671,6 +698,13 @@ def statistiques_avancees():
                 st.write("### Tableau de la fréquentation et satisfaction des gares 2022")
                 for ville in ville_selection:
                     Villes_transports_filtered = Villes_transports_df[Villes_transports_df['city_code'] == ville][['insee_code', 'label', 'department_name', 'nom_gare', 'total_voyageurs_2022', 'Satisfaction/10 2022']]
+                    # meilleur noms de colonnes
+                    new_column_names = {
+                        'nom_gare': 'Nom de la Gare',
+                        'total_voyageurs_2022': 'Total des Voyageurs 2022'
+                        }
+                    # Renommer les colonnes
+                    Villes_transports_filtered.rename(columns=new_column_names, inplace=True)
                     Villes_transports_filtered_T = Villes_transports_filtered.T
                     st.write(f"### {ville}")
                     st.dataframe(Villes_transports_filtered_T)
