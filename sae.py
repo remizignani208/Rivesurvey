@@ -557,7 +557,7 @@ def statistiques_avancees():
                                 ville_data['Actifs Artisants Commercants'], 
                                 ville_data['Actifs Cadres'], 
                                 ville_data['Actifs Prof Intermediare'], 
-                                ville_data['Actifs Employes'], 
+                                ville_data['Actifs Employés'], 
                                 ville_data['Actifs Ouvriers'], 
                                 ville_data['Chômeurs'], 
                                 ville_data['Chômeuse']
